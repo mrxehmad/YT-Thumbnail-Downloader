@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Thumbnail Downloader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .thumbnail-container {
+            margin-bottom: 20px;
+        }
+        .thumbnail-container img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">YouTube Thumbnail Downloader</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="input-group mb-3">
+                    <input type="text" id="videoUrl" class="form-control" placeholder="Paste YouTube video URL here" oninput="getThumbnail()">
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-4" id="thumbnailContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function getThumbnail() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            const videoId = extractVideoId(videoUrl);
+            const thumbnailContainer = document.getElementById('thumbnailContainer');
+            
+            if (videoId) {
+                const sizes = [
+                    { name: 'Small', quality: 'default' },
+                    { name: 'Medium', quality: 'mqdefault' },
+                    { name: 'Large', quality: 'hqdefault' }
+                ];
+
+                let html = '';
+                sizes.forEach(size => {
+                    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/${size.quality}.jpg`;
+                    html += `
+                        <div class="col-md-4 thumbnail-container">
+                            <h3>${size.name}</h3>
+                            <img src="${thumbnailUrl}" alt="${size.name} Thumbnail" class="img-fluid">
+                            <a href="${thumbnailUrl}" class="btn btn-success btn-sm" download>Download ${size.name}</a>
+                        </div>
+                    `;
+                });
+
+                thumbnailContainer.innerHTML = html;
+            } else {
+                thumbnailContainer.innerHTML = '';
+            }
+        }
+
+        function extractVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+    </script>
+</body>
+</html>
